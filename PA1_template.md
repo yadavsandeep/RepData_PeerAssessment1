@@ -12,7 +12,8 @@ Show any code that is needed to
 Loading using read.csv() with stringAsFactors = FALSE to not convert date into factors.
 
 
-```{r}
+
+```r
 myActData <- read.csv("F:/R-Projects/activity.csv", stringsAsFactors = FALSE)
 ```
 
@@ -20,7 +21,8 @@ myActData <- read.csv("F:/R-Projects/activity.csv", stringsAsFactors = FALSE)
 
 I am removing NA's and transforming date variable from string to date
 
-```{r}
+
+```r
 myActData <- na.omit(myActData)
 myActData$date <- as.Date(myActData$date)
 ```
@@ -36,22 +38,26 @@ Here I am creating a new data frame by aggregating steps by date
 
 
 1.Make a histogram of the total number of steps taken each day
-```{r}
+
+```r
  z <- aggregate(steps ~ date, data = myActData, FUN = sum)
  hist(z$steps, 10, main = "Histogram of Total Steps", xlab = "Steps", col = "blue")
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+
 2.Calculate and report the mean and median total number of steps taken per day
 
 
-```{r}
+
+```r
 stepsmean <- mean(z$steps)
 stepsmedian <- median(z$steps)
 ```
 
-Total mean of steps taken: `r stepsmean`
+Total mean of steps taken: 1.0766 &times; 10<sup>4</sup>
 
-Total median of steps taken: `r stepsmedian`
+Total median of steps taken: 10765
 
 -----------------------------------------------------------------
 -----------------------------------------------------------------
@@ -62,17 +68,21 @@ What is the average daily activity pattern?
 
 Here I am aggregating the data by each interval and plotting
 
-```{r}
+
+```r
 intervalAgg <- aggregate(steps ~ interval, data = myActData, FUN = mean)
 plot(intervalAgg, type = "l", col = "red")
 ```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
 Finding the row with maximum number of steps:
 
-```{r}
+
+```r
 maxinterval <- intervalAgg[intervalAgg[, 2] == max(intervalAgg$steps), ]
 ```
 
@@ -88,13 +98,14 @@ Note that there are a number of days/intervals where there are missing values (c
 
 1.Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 myActData <- read.csv("F:/R-Projects/activity.csv", stringsAsFactors = FALSE)
 myActData$date <- as.Date(myActData$date)
 missingVal <- sum(is.na(myActData))
 ```
 
-There are `r missingVal` missing values
+There are 2304 missing values
 
 
 
@@ -104,7 +115,8 @@ There are `r missingVal` missing values
 Filling missing values by using mean of that interval:
 
 
-```{r}
+
+```r
 z <- aggregate(steps ~ interval, data = myActData, FUN = mean)
 completeData <- myActData
 for (i in 1:nrow(myActData)){
@@ -114,7 +126,6 @@ if(is.na(completeData[i,1])){
 }
 
 missingVal <- sum(is.na(completeData))
-
 ```
 
 
@@ -124,22 +135,28 @@ missingVal <- sum(is.na(completeData))
 
 completeData is the new data set with filled values.
 
-There are `r missingVal` missing values now.
+There are 0 missing values now.
 
 
 4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
-```{r}
+
+```r
  z <- aggregate(steps ~ date, data = completeData, FUN = sum)
  hist(z$steps, 10, main = "Histogram of Total Steps", xlab = "Steps", col = "blue")
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+
+```r
 stepsmeannew <- mean(z$steps)
 stepsmediannew <- median(z$steps)
 ```
 
-Total mean of steps taken: `r stepsmeannew`
+Total mean of steps taken: 1.0766 &times; 10<sup>4</sup>
 
-Total median of steps taken: `r stepsmediannew`
+Total median of steps taken: 1.0766 &times; 10<sup>4</sup>
 
 There is no impact in these values from original values by using this approach to fill in the gaps.
 
@@ -153,7 +170,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 Adding a new column by cbind:
 
-```{r}
+
+```r
 weekDay <- c(weekdays(completeData$date))
 weekGrp <- c(NULL)
 for (i in 1:nrow(completeData)){
@@ -170,7 +188,8 @@ completeData <- cbind(completeData, weekGrp)
 2.Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was creating using simulated data:
 
 
-```{r}
+
+```r
 par(mfrow = c(2, 1))
 
 intervalAgg1 <- aggregate(steps ~ interval, data = completeData, subset = completeData$weekGrp == "weekend", FUN = mean)
@@ -180,5 +199,6 @@ intervalAgg2 <- aggregate(steps ~ interval, data = completeData, subset = comple
 
 plot(intervalAgg1, type = "l", col = "red", main = "weekend")
 plot(intervalAgg1, type = "l", col = "red", main = "weekday")
-
 ```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
